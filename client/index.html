@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="./reset.css" />
     <link rel="stylesheet" href="./style.css" />
     <link rel="icon" type="image/png" href="/icon.png" />
+    <script type="module" src="./map.js" defer></script>
     <script type="module" src="./main.js" defer></script>
     <title>EcoCharge</title>
   </head>
@@ -17,11 +18,30 @@
     </header>
 
     <main>
-      <h2>Content</h2>
+      <div class="map-container">
+        <div id="map"></div>
+      </div>
+      <form class="form-container">
+        <h2>User Details</h2>
+      <form>
+        <label for="location">Location:</label>
+        <input type="text" id="location" name="location" placeholder="Current location" required />
+
+        <label for="arrival">Time of Arrival:</label>
+        <input type="time" id="arrival" name="arrival" placeholder="Enter start time here" required />
+
+        <label for="departure">Time of Departure:</label>
+        <input type="time" id="departure" name="departure" placeholder="Enter end time here" required />
+
+        <label for="model">EV Model:</label>
+        <input type="model" id="model" name="model" placeholder="Enter EV model here" required />
+
+        <button type="submit">Submit</button>
+      </form>
     </main>
 
     <footer>
-      <p>W20004613 &copy;</p>
+      <p>&copy; EcoCharge 2024</p>
     </footer>
   </body>
 </html>
