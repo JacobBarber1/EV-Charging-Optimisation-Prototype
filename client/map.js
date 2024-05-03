@@ -3,37 +3,24 @@ import L from "leaflet";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import "leaflet-routing-machine/dist/leaflet-routing-machine";
 
-// Set Newcastle map bounds
-const southWestBound = L.latLng(54.8, -2);
-const northEastBound = L.latLng(55.12, -1.1);
-const maxBoundArea = L.latLngBounds(southWestBound, northEastBound);
+let map;
+let router;
+let closestStationName = "";
+let routeTime = 0;
 
 // Custom icons
 const redIcon = L.icon({
-    iconUrl: "marker-red.png",
-    iconSize: [48, 48],
-    iconAnchor: [24, 48],
-    popupAnchor: [0, -48],
-  });
-  const blueIcon = L.icon({
-    iconUrl: "marker-blue.png",
-    iconSize: [48, 48],
-    iconAnchor: [24, 48],
-    popupAnchor: [0, -48],
-  });
-
-// Initialize Leaflet map - https://leafletjs.com/examples/quick-start/
-const map = L.map("map", {
-  minZoom: 11,
-  maxZoom: 17,
-  maxBounds: maxBoundArea,
-  maxBoundsViscosity: 0.5,
-}).setView([54.9783, -1.6174], 13); // Newcastle coordinates with initial zoom level of 13
-
-// Add base tile layer (OpenStreetMap)
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  format: "image/png",
-}).addTo(map);
+  iconUrl: "marker-red.png",
+  iconSize: [48, 48],
+  iconAnchor: [24, 48],
+  popupAnchor: [0, -48],
+});
+const blueIcon = L.icon({
+  iconUrl: "marker-blue.png",
+  iconSize: [48, 48],
+  iconAnchor: [24, 48],
+  popupAnchor: [0, -48],
+});
 
 // Nodes/locations to be placed on the map
 const nodes = [
@@ -50,13 +37,41 @@ const nodes = [
   { name: "Genie Point Charging Station", marker: L.marker([54.99004624191036, -1.6502973803084127], { icon: blueIcon }) },
   { name: "ChargePoint Charging Station", marker: L.marker([55.001890265799844, -1.5781350102476444], { icon: blueIcon }) },
 ];
-// Add markers for custom nodes to the map
-nodes.forEach((node) => node.marker.addTo(map));
-// Popup and display name when clicked
-nodes.forEach((node) => node.marker.bindPopup(node.name));
 
-let router;
+// Initialize the Leaflet map
+export function initializeMap() {
+  // Set Newcastle map bounds
+  const southWestBound = L.latLng(54.8, -2);
+  const northEastBound = L.latLng(55.12, -1.1);
+  const maxBoundArea = L.latLngBounds(southWestBound, northEastBound);
 
+  // Initialize Leaflet map - https://leafletjs.com/examples/quick-start/
+  map = L.map("map", {
+    minZoom: 11,
+    maxZoom: 17,
+    maxBounds: maxBoundArea,
+    maxBoundsViscosity: 0.5,
+  }).setView([54.9783, -1.6174], 13); // Newcastle coordinates with initial zoom level of 13
+
+  // Add base tile layer (OpenStreetMap)
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    format: "image/png",
+  }).addTo(map);
+
+  addMarkers(nodes);
+
+  map.on("click", onMapClick);
+}
+
+// Add markers to the map
+export function addMarkers(nodes) {
+  nodes.forEach((node) => {
+    node.marker.addTo(map);
+    node.marker.bindPopup(node.name);
+  });
+}
+
+// Calculate and display the route on map click
 function onMapClick(e) {
   const clickedPoint = e.latlng;
   const nearestNode = calculateNearestNode(clickedPoint);
@@ -81,9 +96,14 @@ function onMapClick(e) {
       }
     },
   }).addTo(map);
-}
 
-map.on("click", onMapClick);
+  // Listen for the routing response event
+  router.on("routesfound", function (event) {
+    const route = event.routes[0];
+    closestStationName = route.name;
+    routeTime = route.summary.totalTime / 60; // In minutes
+  });
+}
 
 // Calculate nearest node from clicked point on the map
 function calculateNearestNode(clickedPoint) {
@@ -98,4 +118,14 @@ function calculateNearestNode(clickedPoint) {
     }
   });
   return nearestNode;
+}
+
+// Get closest station name
+export function getClosestStationName() {
+  return closestStationName;
+}
+
+// Get route time
+export function getRouteTime() {
+  return routeTime;
 }
