@@ -5,7 +5,7 @@ import "leaflet-routing-machine/dist/leaflet-routing-machine";
 
 let map;
 let router;
-let closestStationName = "";
+let closestStationName = "Place marker on map";
 let routeTime = 0;
 
 // Custom icons
@@ -22,18 +22,17 @@ const blueIcon = L.icon({
   popupAnchor: [0, -48],
 });
 
-// Nodes/locations to be placed on the map
-const nodes = [
+// Charging stations to be placed on the map
+const stations = [
   { name: "VIRTA Charging Station", marker: L.marker([54.980496829569006, -1.5998971758933211], { icon: blueIcon }) },
   { name: "PoGo Charging Station", marker: L.marker([54.970971869209194, -1.6179499655936918], { icon: blueIcon }) },
   { name: "Fastned Charging Station", marker: L.marker([54.97499414278806, -1.6246158176701744], { icon: blueIcon }) },
-  { name: "bp pulse Charging Station", marker: L.marker([54.96719616897439, -1.6056753565153077], { icon: blueIcon }) },
+  { name: "BP Pulse Charging Station", marker: L.marker([54.96719616897439, -1.6056753565153077], { icon: blueIcon }) },
   { name: "InstaVolt Charging Station", marker: L.marker([54.97804430973945, -1.57411415355686], { icon: blueIcon }) },
   { name: "Be.EV Charging Station", marker: L.marker([54.98115734862636, -1.5720504242614803], { icon: blueIcon }) },
-  { name: "evyve Charging Station", marker: L.marker([54.99134181676397, -1.5846783570678173], { icon: blueIcon }) },
-  { name: "InstaVolt Charging Station", marker: L.marker([54.96252616437865, -1.588412381263026], { icon: blueIcon }) },
-  { name: "InstaVolt Charging Station", marker: L.marker([54.96229120880857, -1.5879574522425255], { icon: blueIcon }) },
-  { name: "evyve Charging Station", marker: L.marker([54.98197330693165, -1.6652848046783182], { icon: blueIcon }) },
+  { name: "EVYVE Charging Station", marker: L.marker([54.99134181676397, -1.5846783570678173], { icon: blueIcon }) },
+  { name: "InstaVolt Charging Station", marker: L.marker([54.96222616437855, -1.588312381263106], { icon: blueIcon }) },
+  { name: "EVYVE Charging Station", marker: L.marker([54.98197330693165, -1.6652848046783182], { icon: blueIcon }) },
   { name: "Genie Point Charging Station", marker: L.marker([54.99004624191036, -1.6502973803084127], { icon: blueIcon }) },
   { name: "ChargePoint Charging Station", marker: L.marker([55.001890265799844, -1.5781350102476444], { icon: blueIcon }) },
 ];
@@ -58,23 +57,23 @@ export function initializeMap() {
     format: "image/png",
   }).addTo(map);
 
-  addMarkers(nodes);
+  addStationMarkers(stations);
 
   map.on("click", onMapClick);
 }
 
-// Add markers to the map
-export function addMarkers(nodes) {
-  nodes.forEach((node) => {
-    node.marker.addTo(map);
-    node.marker.bindPopup(node.name);
+// Add station markers to the map
+export function addStationMarkers(stations) {
+  stations.forEach((station) => {
+    station.marker.addTo(map);
+    station.marker.bindPopup(station.name);
   });
 }
 
 // Calculate and display the route on map click
 function onMapClick(e) {
   const clickedPoint = e.latlng;
-  const nearestNode = calculateNearestNode(clickedPoint);
+  const nearestStation = calculateNearestStation(clickedPoint);
 
   // Remove the previous route if it exists
   if (router) {
@@ -84,7 +83,7 @@ function onMapClick(e) {
 
   // Create the routing control and add it to the map
   router = L.Routing.control({
-    waypoints: [L.latLng(clickedPoint.lat, clickedPoint.lng), L.latLng(nearestNode.lat, nearestNode.lng)],
+    waypoints: [L.latLng(clickedPoint.lat, clickedPoint.lng), L.latLng(nearestStation.lat, nearestStation.lng)],
     lineOptions: {
       styles: [{ color: "red", opacity: 0.6, weight: 4 }],
     },
@@ -105,19 +104,19 @@ function onMapClick(e) {
   });
 }
 
-// Calculate nearest node from clicked point on the map
-function calculateNearestNode(clickedPoint) {
+// Calculate nearest station from clicked point on the map
+function calculateNearestStation(clickedPoint) {
   let minDistance = Infinity;
-  let nearestNode = null;
-  // Check distance between each node and find closest one
-  nodes.forEach(function (node) {
-    const distance = clickedPoint.distanceTo(node.marker.getLatLng());
+  let nearestStation = null;
+  // Check distance between each station and find closest one
+  stations.forEach(function (station) {
+    const distance = clickedPoint.distanceTo(station.marker.getLatLng());
     if (distance < minDistance) {
       minDistance = distance;
-      nearestNode = node.marker.getLatLng();
+      nearestStation = station.marker.getLatLng();
     }
   });
-  return nearestNode;
+  return nearestStation;
 }
 
 // Get closest station name
@@ -125,7 +124,7 @@ export function getClosestStationName() {
   return closestStationName;
 }
 
-// Get route time
+// Get route time between placed marker and station
 export function getRouteTime() {
   return routeTime;
 }

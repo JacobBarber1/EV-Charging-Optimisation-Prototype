@@ -1,6 +1,5 @@
 import { initializeMap, getRouteTime, getClosestStationName } from "./map.js";
-
-initializeMap();
+import { createChart } from "./chart.js";
 
 const form = document.querySelector(".form-container");
 const output = document.querySelector(".output-container");
@@ -15,47 +14,99 @@ const evModels = {
   volkswagen: { name: "Volkswagen ID.3", capacity: 58 },
 };
 
+const hourlyPricesThroughoutDay = {
+  "00:00": 0.12,
+  "01:00": 0.09,
+  "02:00": 0.11,
+  "03:00": 0.12,
+  "04:00": 0.15,
+  "05:00": 0.17,
+  "06:00": 0.14,
+  "07:00": 0.18,
+  "08:00": 0.17,
+  "09:00": 0.22,
+  "10:00": 0.3,
+  "11:00": 0.55,
+  "12:00": 0.52,
+  "13:00": 0.53,
+  "14:00": 0.52,
+  "15:00": 0.64,
+  "16:00": 0.92,
+  "17:00": 0.88,
+  "18:00": 0.77,
+  "19:00": 0.72,
+  "20:00": 0.62,
+  "21:00": 0.57,
+  "22:00": 0.47,
+  "23:00": 0.45,
+};
+
+initializeMap();
+createChart(hourlyPricesThroughoutDay);
+
 form.addEventListener("submit", function (event) {
   event.preventDefault();
 
   // Get form input values
-  const arrivalTime = document.getElementById("arrival").value;
-  const chargingDuration = document.getElementById("duration").value;
+  const startTime = document.getElementById("startTime").value;
   const evModel = document.getElementById("model").value;
   const currentCharge = document.getElementById("charge").value;
 
-  calculateSchedule(arrivalTime, chargingDuration, currentCharge, evModel);
+  calculateSchedule(startTime, currentCharge, evModel);
 });
 
-function calculateSchedule(arrivalTime, chargingDuration, currentCharge, evModel) {
-  const hourlyPricesThroughoutDay = [0.12, 0.09, 0.11, 0.12, 0.15, 0.17, 0.14, 0.18, 0.17, 0.22, 0.3, 0.55, 0.52, 0.53, 0.52, 0.64, 0.92, 0.88, 0.77, 0.72, 0.62, 0.57, 0.47, 0.45,
-  ];
+function calculateSchedule(startTime, currentCharge, evModel) {
   const evModelName = evModels[evModel].name;
   const batteryCapacity = evModels[evModel].capacity;
+  if (currentCharge > batteryCapacity) {
+    currentCharge = batteryCapacity;
+  }
   const chargingRate = 20; // kWh
-  const travelTimeToStation = getRouteTime().toFixed(2);
+  const stationETA = getRouteTime();
   const energyConsumptionPerMinute = 0.2; // kWh
-  const chargeRemainingAtStation = (currentCharge - energyConsumptionPerMinute * travelTimeToStation).toFixed(2);
+  const chargeUponArrival = currentCharge - energyConsumptionPerMinute * stationETA;
+
+  // Check user has entered location on the map
+  if (stationETA == 0.0) {
+    output.innerHTML = `
+    <p>Please click on the map to enter your current location and resubmit the form</p>
+  `;
+    return;
+  }
+
+  // Calculate the time required to fully charge the battery
+  const timeToFullCharge = (batteryCapacity - currentCharge) / chargingRate; // in hours
 
   let cost = 0;
-  // Get the cost for each hour of charging
-  for (let i = 0; i < chargingDuration; i++) {
-    const hourIndex = (parseInt(arrivalTime) + i) % 24; // Get index but don't go past 23 (go back to index 0)
-    cost += hourlyPricesThroughoutDay[hourIndex];
+  const parsedStartTime = parseInt(startTime, 10);
+  // Get the cost for each hour of charging until fully charged
+  for (let hour = parsedStartTime; hour < timeToFullCharge + parsedStartTime; hour++) {
+    const hourString = (hour % 24).toString().padStart(2, "0") + ":00"; // Get the hour string in "hh:00" format
+    // Add the cost for the current hour to the total cost
+    cost += hourlyPricesThroughoutDay[hourString];
   }
 
   output.innerHTML = `
-    <h2>Output</h2>
-    <p>EV Model: ${evModelName}</p>
-    <p>Closest Station: ${getClosestStationName()}</p>
-    <p>Travel time to station: ${travelTimeToStation} minutes</p>
-    <p>Charge remaining on arrival to station: ${chargeRemainingAtStation} kWh</p>
-    <p>Total Battery Capacity: ${batteryCapacity} kWh</p>
-    <p>Rate of Charge: ${chargingRate} kWh</p>
-    <p>Hour of Arrival: ${arrivalTime}:00</p>
-    <p>Charging Duration: ${chargingDuration} hour(s)</p>
-    <p>Cost: £${cost.toFixed(2)}</p>
+    <h2>Charging Schedule</h2>
+    <h3>EV Model: <p>${evModelName}</p></h3>
+    <h3>Closest station: <p>${getClosestStationName()}</p></h3>
+    <h3>Travel time to station: <p>${decimalToTime(stationETA / 60)}</p></h3>
+    <h3>Charge upon arrival: <p>${chargeUponArrival.toFixed(2)} / ${batteryCapacity.toFixed(2)} kWh</p></h3>
+    <h3>Charging Start Time (hour): <p>${startTime}</p></h3>
+    <h3>Time to fully charge (at ${chargingRate} kWh): <p>${decimalToTime(timeToFullCharge)}</p></h3>
+    <h3>Cost: <p>£${cost.toFixed(2)}</p></h3>
   `;
+}
+
+function decimalToTime(decimal) {
+  const hours = Math.floor(decimal);
+  const minutes = Math.floor((decimal - hours) * 60);
+
+  if (hours === 0) {
+    return `${minutes} min`;
+  } else {
+    return `${hours} hour(s) ${minutes} min`;
+  }
 }
 
 function updateTime() {

@@ -25,15 +25,23 @@ header .icon {
 footer {
   align-self: center;
   color: rgba(255, 255, 255, 0.5);
-  font-size: 12px;
+  font-size: 13px;
   padding: 10px;
 }
 
 main {
   display: flex;
   flex: 1;
+  flex-direction: column;
   padding: 10px 20px;
   gap: 20px;
+}
+
+.map-form-container {
+  display: flex;
+  flex: 1;
+  gap: 20px;
+  height: 100vh;
 }
 
 .map-container {
@@ -41,6 +49,7 @@ main {
   border: 2px solid white;
   border-radius: 8px;
   color: black;
+  height: 84vh;
 }
 
 #map {
@@ -51,19 +60,36 @@ main {
   display: flex;
   justify-content: center;
   flex-direction: column;
-  flex: 0.5;
+  flex: 0.4;
   gap: 20px;
 }
 
 .form-container,
 .output-container {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   flex-direction: column;
   flex: 1;
   padding: 20px;
   border: 2px solid white;
   border-radius: 8px;
+}
+
+.output-container {
+  flex: 1.8;
+}
+
+.input-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#hourlyPricesChart {
+  background-color: white;
+  border: 2px solid white;
+  border-radius: 8px;
+  max-height: 80vh;
 }
 
 #time {
@@ -74,4 +100,31 @@ main {
 
 h1 {
   font-size: 50px;
+}
+
+h2 {
+  font-size: 20px;
+}
+
+h3 {
+  font-size: 14px;
+}
+
+p {
+  font-size: 17px;
+}
+
+input,
+select,
+button {
+  padding: 5px;
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+}
+
+button:hover,
+select:hover {
+  cursor: pointer;
+  background-color: white;
 }

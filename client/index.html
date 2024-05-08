@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./reset.css" />
     <link rel="stylesheet" href="./style.css" />
-    <link rel="icon" type="image/png" href="/icon.png" />
+    <link rel="icon" type="image/png" href="./icon.png" />
     <script type="module" src="./main.js" defer></script>
     <title>EcoCharge</title>
   </head>
@@ -14,45 +14,51 @@
     <header>
       <h1>Ec<img class="icon" src="/icon.png" alt="icon" />Charge</h1>
       <p>
-        Welcome to EcoCharge, your personal assistant for optimizing EV charging within cities. Our mission is to make EV charging as efficient and
-        cost-effective as possible.
+        Welcome to EcoCharge, your personal assistant for optimizing EV charging within cities. Our mission is to make
+        EV charging as efficient and cost-effective as possible.
       </p>
     </header>
 
     <main>
-      <div class="map-container">
-        <div id="map"></div>
+      <div class="map-form-container">
+        <div class="map-container">
+          <div id="map"></div>
+        </div>
+        <div class="info-container">
+          <form class="form-container">
+            <h2>Journey Details</h2>
+
+            <div class="input-container">
+              <label for="startTime">Charging Start Time (hour):</label>
+              <input type="time" id="startTime" name="startTime" step="3600" />
+            </div>
+
+            <div class="input-container">
+              <label for="model">EV Model:</label>
+              <select id="model" name="model">
+                <option value="" disabled selected>Please select a model</option>
+                <option value="bmw">BMW iX xDrive 50</option>
+                <option value="honda">Honda e</option>
+                <option value="mercedes">Mercedes-Benz EQS AMG 53 4MATIC+</option>
+                <option value="mini">MINI Electric</option>
+                <option value="nissan">Nissan LEAF</option>
+                <option value="tesla">Tesla Model 3</option>
+                <option value="volkswagen">Volkswagen ID.3</option>
+              </select>
+            </div>
+
+            <div class="input-container">
+              <label for="charge">Current Charge (kWh):</label>
+              <input type="number" id="charge" name="charge" min="0" placeholder="Enter current charge" required />
+            </div>
+
+            <button type="submit">Submit</button>
+          </form>
+
+          <div class="output-container"></div>
+        </div>
       </div>
-      <div class="info-container">
-        <form class="form-container">
-          <h2>User Details</h2>
-
-          <label for="arrival">Time of Arrival (hour):</label>
-          <input type="number" id="arrival" name="arrival" min="0" max="23" placeholder="Enter arrival time here" required />
-
-          <label for="duration">Charging Duration (hours):</label>
-          <input type="number" id="duration" name="duration" min="1" max="12" placeholder="Enter charging duration here" required />
-
-          <label for="model">EV Model:</label>
-          <select id="model" name="model">
-            <option value="" disabled selected>Please select a model</option>
-            <option value="bmw">BMW iX xDrive 50</option>
-            <option value="honda">Honda e</option>
-            <option value="mercedes">Mercedes-Benz EQS AMG 53 4MATIC+</option>
-            <option value="mini">MINI Electric</option>
-            <option value="nissan">Nissan LEAF</option>
-            <option value="tesla">Tesla Model 3</option>
-            <option value="volkswagen">Volkswagen ID.3</option>
-          </select>
-
-          <label for="charge">Current Charge (kWh):</label>
-          <input type="number" id="charge" name="charge" min="0" placeholder="Enter current charge" required />
-
-          <button type="submit">Submit</button>
-        </form>
-
-        <div class="output-container"></div>
-      </div>
+      <canvas id="hourlyPricesChart"></canvas>
     </main>
 
     <footer>
