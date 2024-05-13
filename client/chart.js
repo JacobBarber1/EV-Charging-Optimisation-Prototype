@@ -1,8 +1,8 @@
 import Chart from "chart.js/auto";
 
-export function createChart(hourlyPricesThroughoutDay) {
-  const ctx = document.getElementById("hourlyPricesChart");
+const ctx = document.getElementById("hourlyPricesChart");
 
+export function createChart(hourlyPricesThroughoutDay) {
   // Define the data for the chart
   const hours = Object.keys(hourlyPricesThroughoutDay);
   const prices = Object.values(hourlyPricesThroughoutDay);
@@ -17,8 +17,6 @@ export function createChart(hourlyPricesThroughoutDay) {
           label: "Price (£/kWh)",
           data: prices,
           backgroundColor: "rgba(0, 97, 153, 0.8)",
-          borderColor: "rgb(0, 97, 153)",
-          borderWidth: 1,
         },
       ],
     },
@@ -26,7 +24,7 @@ export function createChart(hourlyPricesThroughoutDay) {
       plugins: {
         title: {
           display: true,
-          text: "Electricity Prices Throughout The Day",
+          text: "Charging Schedule",
           font: {
             size: 18,
           },
@@ -48,5 +46,31 @@ export function createChart(hourlyPricesThroughoutDay) {
         },
       },
     },
+  });
+}
+
+// Change bars to show time allocated and cheapest times
+export function updateBarsOnChart(allocatedTime, cheapestTimes) {
+  const hourlyPricesChart = Chart.getChart(ctx);
+  hourlyPricesChart.data.datasets[0].backgroundColor = setBarColours(
+    hourlyPricesChart.data.labels,
+    allocatedTime,
+    cheapestTimes
+  );
+  hourlyPricesChart.update();
+}
+
+// Set bar colour
+function setBarColours(hours, allocatedTime, cheapestTimes) {
+  return hours.map((hour) => {
+    if (allocatedTime.includes(hour)) {
+      if (cheapestTimes.includes(hour)) {
+        return "rgba(3, 198, 0.8)"; // Green - Cheapest charging time
+      } else {
+        return "rgba(198, 0, 0, 0.8)"; // Red - Allocated time
+      }
+    } else {
+      return "rgba(206, 206, 206, 0.8)"; // Grey - Other times
+    }
   });
 }

@@ -92,6 +92,27 @@ main {
   max-height: 80vh;
 }
 
+.chart-legend {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.chart-legend .colour {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.chart-legend .red-square {
+  background-color: rgba(198, 0, 0, 0.8);
+  width: 20px;
+  height: 20px;
+}
+.chart-legend .green-square {
+  background-color: rgba(3, 198, 0.8);
+  width: 20px;
+  height: 20px;
+}
+
 #time {
   position: fixed;
   top: 5px;

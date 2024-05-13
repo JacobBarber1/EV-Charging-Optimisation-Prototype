@@ -26,11 +26,16 @@
         </div>
         <div class="info-container">
           <form class="form-container">
-            <h2>Journey Details</h2>
+            <h2>Charging Details</h2>
 
             <div class="input-container">
-              <label for="startTime">Charging Start Time (hour):</label>
-              <input type="time" id="startTime" name="startTime" step="3600" />
+              <label for="timeOfArrival">Time Of Arrival (hour):</label>
+              <input type="time" id="timeOfArrival" name="timeOfArrival" step="3600" />
+            </div>
+
+            <div class="input-container">
+              <label for="timeOfDeparture">Time Of Departure (hour):</label>
+              <input type="time" id="timeOfDeparture" name="timeOfDeparture" step="3600" />
             </div>
 
             <div class="input-container">
@@ -59,6 +64,17 @@
         </div>
       </div>
       <canvas id="hourlyPricesChart"></canvas>
+      <div class="chart-legend">
+        <p>Legend:</p>
+        <div class="colour">
+          <div class="red-square"></div>
+          <p>Allocated Time</p>
+        </div>
+        <div class="colour">
+          <div class="green-square"></div>
+          <p>Cheapest Time</p>
+        </div>
+      </div>
     </main>
 
     <footer>
