@@ -15,6 +15,7 @@ header {
   align-items: center;
   padding: 20px;
   gap: 10px;
+  text-align: center;
 }
 
 header .icon {
@@ -50,10 +51,12 @@ main {
   border-radius: 8px;
   color: black;
   height: 84vh;
+  width: 100%;
 }
 
 #map {
   height: 100%;
+  width: 100%;
 }
 
 .info-container {
@@ -149,4 +152,27 @@ button:hover,
 select:hover {
   cursor: pointer;
   background-color: white;
+}
+
+@media screen and (max-width: 900px) {
+  .map-form-container {
+    flex-direction: column;
+  }
+
+  .map-container {
+    height: 84vh;
+  }
+
+  #map {
+    min-height: 70vh;
+  }
+
+  .form-container,
+  .output-container {
+    min-height: 30vh;
+  }
+
+  .output-container {
+    gap: 1rem;
+  }
 }
